@@ -11,7 +11,8 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/product',
+    path: '/product/:id',
+    props: true,
     name: 'product',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
