@@ -1,5 +1,4 @@
 <template>
-
   <!-- Header Section Begin -->
   <header class="header-section">
     <div class="header-top">
@@ -31,49 +30,47 @@
                 Keranjang Belanja &nbsp;
                 <a href="#">
                   <i class="icon_bag_alt"></i>
-                  <span>3</span>
+                  <span>{{ shoppingCart.length }}</span>
                 </a>
                 <div class="cart-hover">
                   <div class="select-items">
                     <table>
-                      <tbody>
-                        <tr>
+
+                      <tbody v-if="shoppingCart.length > 0">
+
+                        <tr v-for="cart in shoppingCart" :key="cart.id">
                           <td class="si-pic">
-                            <img src="img/select-product-1.jpg" alt="" />
+                            <img :src="cart.photo" alt="" class="photo-item"/>
                           </td>
                           <td class="si-text">
                             <div class="product-selected">
-                              <p>$60.00 x 1</p>
-                              <h6>Kabino Bedside Table</h6>
+                              <p>${{ cart.price }} x 1</p>
+                              <h6>{{ cart.name }}</h6>
                             </div>
                           </td>
-                          <td class="si-close">
+                          <td class="si-close" @click="removeItem(shoppingCart.index)">
                             <i class="ti-close"></i>
                           </td>
                         </tr>
+
+                      </tbody>
+
+                      <tbody v-else>
                         <tr>
-                          <td class="si-pic">
-                            <img src="img/select-product-2.jpg" alt="" />
-                          </td>
-                          <td class="si-text">
-                            <div class="product-selected">
-                              <p>$60.00 x 1</p>
-                              <h6>Kabino Bedside Table</h6>
-                            </div>
-                          </td>
-                          <td class="si-close">
-                            <i class="ti-close"></i>
+                          <td>
+                            <h5 class="text-center">Empty Cart</h5>
                           </td>
                         </tr>
                       </tbody>
+
                     </table>
                   </div>
                   <div class="select-total">
                     <span>total:</span>
-                    <h5>$120.00</h5>
+                    <h5>${{ totalPrice }}</h5>
                   </div>
                   <div class="select-button">
-                    <a href="#" class="primary-btn view-card">VIEW CARD</a>
+                    <router-link to="/shoppingCart" class="primary-btn view-card">VIEW CARD</router-link>
                     <a href="#" class="primary-btn checkout-btn">CHECK OUT</a>
                   </div>
                 </div>
@@ -85,11 +82,53 @@
     </div>
   </header>
   <!-- Header End -->
-
 </template>
 
 <script>
 export default {
-    name: "HeaderView",
-}
+  name: "HeaderView",
+  data() {
+    return {
+      shoppingCart: [],
+    };
+  },
+  methods: {
+    removeItem(index) {
+      this.shoppingCart.splice(index, 1);
+      const parsed = JSON.stringify(this.shoppingCart);
+      localStorage.setItem("shoppingCart", parsed);
+      location.reload();
+    }
+  },
+  mounted() {
+    if (localStorage.getItem("shoppingCart")) {
+      try {
+        this.shoppingCart = JSON.parse(localStorage.getItem("shoppingCart"));
+      } catch (e) {
+        localStorage.removeItem("shoppingCart");
+      }
+    }
+  },
+  computed: {
+    totalPrice() {
+      let total = 0;
+      this.shoppingCart.forEach(cart => {
+        total += cart.price;
+      });
+      return total;
+
+      // Cara lain buat ngitung total
+      // return this.shoppingCart.reduce(function(items, data) => {
+      //   return items + data.price;
+      // }, 0);
+    }
+  }
+};
 </script>
+
+<style scoped>
+.photo-item {
+  width: 120px;
+  height: 80px;
+}
+</style>

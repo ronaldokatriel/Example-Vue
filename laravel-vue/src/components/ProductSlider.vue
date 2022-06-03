@@ -17,7 +17,7 @@
                 <img v-bind:src="itemProduct.galleries[0].photo" alt="" />
                 <ul>
                   <li class="w-icon active">
-                    <a href="#"><i class="icon_bag_alt"></i></a>
+                    <a href="#" @click="saveShoppingCart(itemProduct.id, itemProduct.name, itemProduct.price, itemProduct.galleries[0].photo)"><i class="icon_bag_alt"></i></a>
                   </li>
                   <li class="quick-view">
                     <router-link v-bind:to="'/product/'+itemProduct.id">+ Quick View</router-link>
@@ -61,12 +61,26 @@ export default {
   data() {
     return {
       products: [],
+      shoppingCart: []
     };
   },
   methods: {
     changeImage() {
       // eslint-disable-next-line no-console
       // console.log(this.products);
+    },
+    saveShoppingCart(idProduct, nameProduct, priceProduct, photoProduct) {
+      var productStored = {
+        id: idProduct,
+        name: nameProduct,
+        price: priceProduct,
+        photo: photoProduct,
+      };
+
+      this.shoppingCart.push(productStored);
+      const parsed = JSON.stringify(this.shoppingCart);
+      localStorage.setItem("shoppingCart", parsed);
+      
     },
   },
   mounted() {

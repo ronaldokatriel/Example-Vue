@@ -34,32 +34,36 @@
                         <th>Action</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
+
+                    <tbody v-if="shoppingCart.length > 0">
+                      <tr v-for="cart in shoppingCart" :key="cart.id">
                         <td class="cart-pic first-row">
-                          <img src="img/cart-page/product-1.jpg" />
+                          <img :src="cart.photo" class="item-pic"/>
                         </td>
                         <td class="cart-title first-row text-center">
-                          <h5>Pure Pineapple</h5>
+                          <h5>{{ cart.name }}</h5>
                         </td>
-                        <td class="p-price first-row">$60.00</td>
-                        <td class="delete-item">
-                          <a href="#"><i class="material-icons"> close </i></a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="cart-pic first-row">
-                          <img src="img/cart-page/product-1.jpg" />
-                        </td>
-                        <td class="cart-title first-row text-center">
-                          <h5>Pure Pineapple</h5>
-                        </td>
-                        <td class="p-price first-row">$60.00</td>
-                        <td class="delete-item">
+                        <td class="p-price first-row">${{ cart.price }}</td>
+                        <td
+                          class="delete-item"
+                          @click="removeItem(shoppingCart.index)"
+                        >
                           <a href="#"><i class="material-icons"> close </i></a>
                         </td>
                       </tr>
                     </tbody>
+
+                    <tbody v-else>
+                      <tr>
+                        <td>
+                          <h5>
+                            <i class="material-icons"> shopping_cart </i>
+                            Your shopping cart is empty
+                          </h5>
+                        </td>
+                      </tr>
+                    </tbody>
+
                   </table>
                 </div>
               </div>
@@ -133,7 +137,9 @@
                       Nama Penerima <span>Shayna</span>
                     </li>
                   </ul>
-                  <router-link to="/success" class="proceed-btn">I ALREADY PAID</router-link>
+                  <router-link to="/success" class="proceed-btn"
+                    >I ALREADY PAID</router-link
+                  >
                 </div>
               </div>
             </div>
@@ -142,7 +148,6 @@
       </div>
     </section>
     <!-- Shopping Cart Section End -->
-
   </div>
 </template>
 
@@ -154,5 +159,34 @@ export default {
   components: {
     HeaderView,
   },
+  data() {
+    return {
+      shoppingCart: [],
+    };
+  },
+  methods: {
+    removeItem(index) {
+      this.shoppingCart.splice(index, 1);
+      const parsed = JSON.stringify(this.shoppingCart);
+      localStorage.setItem("shoppingCart", parsed);
+      location.reload();
+    },
+  },
+  mounted() {
+    if (localStorage.getItem("shoppingCart")) {
+      try {
+        this.shoppingCart = JSON.parse(localStorage.getItem("shoppingCart"));
+      } catch (e) {
+        localStorage.removeItem("shoppingCart");
+      }
+    }
+  },
 };
 </script>
+
+<style scoped>
+.item-pic {
+  width: 128.3px;
+  height: 85.53px;
+}
+</style>
