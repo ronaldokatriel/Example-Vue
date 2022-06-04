@@ -67,7 +67,7 @@
                   </div>
                   <div class="select-total">
                     <span>total:</span>
-                    <h5>${{ totalPrice }}</h5>
+                    <h5>${{ totalPrice }}.00</h5>
                   </div>
                   <div class="select-button">
                     <router-link to="/shoppingCart" class="primary-btn view-card">VIEW CARD</router-link>

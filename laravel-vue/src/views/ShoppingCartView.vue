@@ -79,6 +79,7 @@
                         id="namaLengkap"
                         aria-describedby="namaHelp"
                         placeholder="Masukan Nama"
+                        v-model="customerInfo.name"
                       />
                     </div>
                     <div class="form-group">
@@ -89,6 +90,7 @@
                         id="emailAddress"
                         aria-describedby="emailHelp"
                         placeholder="Masukan Email"
+                        v-model="customerInfo.email"
                       />
                     </div>
                     <div class="form-group">
@@ -99,6 +101,7 @@
                         id="noHP"
                         aria-describedby="noHPHelp"
                         placeholder="Masukan No. HP"
+                        v-model="customerInfo.phone"
                       />
                     </div>
                     <div class="form-group">
@@ -107,6 +110,8 @@
                         class="form-control"
                         id="alamatLengkap"
                         rows="3"
+                        placeholder="Masukan Alamat Lengkap"
+                        v-model="customerInfo.address"
                       ></textarea>
                     </div>
                   </form>
@@ -122,10 +127,10 @@
                     <li class="subtotal">
                       ID Transaction <span>#SH12000</span>
                     </li>
-                    <li class="subtotal mt-3">Subtotal <span>$240.00</span></li>
-                    <li class="subtotal mt-3">Pajak <span>10%</span></li>
+                    <li class="subtotal mt-3">Subtotal <span>${{ totalPrice }}.00</span></li>
+                    <li class="subtotal mt-3">Pajak (10%) <span>${{ totalTax }}.00</span></li>
                     <li class="subtotal mt-3">
-                      Total Biaya <span>$440.00</span>
+                      Total Biaya <span>${{ totalAmount }}.00</span>
                     </li>
                     <li class="subtotal mt-3">
                       Bank Transfer <span>Mandiri</span>
@@ -137,8 +142,8 @@
                       Nama Penerima <span>Shayna</span>
                     </li>
                   </ul>
-                  <router-link to="/success" class="proceed-btn"
-                    >I ALREADY PAID</router-link
+                  <a href="#" class="proceed-btn" @click="checkOut()"
+                    >I ALREADY PAID</a
                   >
                 </div>
               </div>
@@ -153,6 +158,7 @@
 
 <script>
 import HeaderView from "@/components/HeaderView.vue";
+import axios from "axios";
 
 export default {
   name: "ShopingCartView",
@@ -162,6 +168,12 @@ export default {
   data() {
     return {
       shoppingCart: [],
+      customerInfo: {
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+      },
     };
   },
   methods: {
@@ -171,6 +183,30 @@ export default {
       localStorage.setItem("shoppingCart", parsed);
       location.reload();
     },
+    checkOut() {
+      let productIds = this.shoppingCart.map(function(product){
+        return product.id;
+      });
+
+      let checkoutData = {
+        'name': this.customerInfo.name,
+        'email': this.customerInfo.email,
+        'number': this.customerInfo.phone,
+        'address': this.customerInfo.address,
+        'transaction_total': this.totalAmount,
+        'transaction_status': 'PENDING',
+        'transaction_details': productIds
+      };
+
+      axios
+        .post(
+          "http://shayna-backend.belajarkoding.com/api/checkout",
+          checkoutData
+        )
+        .then(() => this.$router.push("success"))
+        //eslint-disable-next-line no-console
+        .catch(err => console.log(err));
+    }
   },
   mounted() {
     if (localStorage.getItem("shoppingCart")) {
@@ -181,6 +217,26 @@ export default {
       }
     }
   },
+  computed: {
+    totalPrice() {
+      let total = 0;
+      this.shoppingCart.forEach(cart => {
+        total += cart.price;
+      });
+      return total;
+
+      // Cara lain buat ngitung total
+      // return this.shoppingCart.reduce(function(items, data) => {
+      //   return items + data.price;
+      // }, 0);
+    },
+    totalTax() {
+      return this.totalPrice / 10;
+    },
+    totalAmount() {
+      return this.totalPrice + this.totalTax;
+    },
+  }
 };
 </script>
 
