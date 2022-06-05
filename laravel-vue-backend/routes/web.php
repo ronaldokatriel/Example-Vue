@@ -18,5 +18,9 @@ use App\Http\Controllers\DashboardController;
 Auth::routes(['register' => false]);
 
 Route::get('/', [DashboardController::class, 'index'])->name('home');
+Route::get('products/{id}/gallery', 'ProductController@gallery')->name('products.gallery');
+Route::get('transactions/{id}/set-status', 'TransactionController@setStatus')->name('transactions.status');
 
 Route::resource('products', ProductController::class);
+Route::resource('product-galleries', ProductGalleryController::class);
+Route::resource('transactions', TransactionController::class);
