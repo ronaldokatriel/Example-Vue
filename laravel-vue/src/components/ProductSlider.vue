@@ -80,7 +80,8 @@ export default {
       this.shoppingCart.push(productStored);
       const parsed = JSON.stringify(this.shoppingCart);
       localStorage.setItem("shoppingCart", parsed);
-      
+      location.reload();
+
     },
   },
   mounted() {
@@ -89,6 +90,14 @@ export default {
       // .get("http://shayna-backend.belajarkoding.com/api/products")
       .then((res) => (this.products = res.data.data.data))
       .catch((err) => console.log(err));
+
+    if (localStorage.getItem("shoppingCart")) {
+      try {
+        this.shoppingCart = JSON.parse(localStorage.getItem("shoppingCart"));
+      } catch (e) {
+        localStorage.removeItem("shoppingCart");
+      }
+    }
   },
 };
 </script>

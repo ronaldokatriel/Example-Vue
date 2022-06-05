@@ -48,7 +48,7 @@
                               <h6>{{ cart.name }}</h6>
                             </div>
                           </td>
-                          <td class="si-close" @click="removeItem(shoppingCart.index)">
+                          <td class="si-close" @click="removeItem(cart.id)">
                             <i class="ti-close"></i>
                           </td>
                         </tr>
@@ -93,8 +93,18 @@ export default {
     };
   },
   methods: {
-    removeItem(index) {
+    removeItem(idx) {
+      // Find the id of the item that got removed
+      let shoppingCartStorage = JSON.parse(localStorage.getItem("shoppingCart"));
+      let itemShoppingCartStorage = shoppingCartStorage.map(itemShoppingCartStorage => itemShoppingCartStorage.id);
+
+      // Match the id with the id in the storage then removed
+      let index = itemShoppingCartStorage.findIndex(id => id == idx);
       this.shoppingCart.splice(index, 1);
+
+      //eslint-disable-next-line no-console
+      console.log(idx);
+
       const parsed = JSON.stringify(this.shoppingCart);
       localStorage.setItem("shoppingCart", parsed);
       location.reload();
